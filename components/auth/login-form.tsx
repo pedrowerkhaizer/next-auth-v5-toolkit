@@ -22,8 +22,8 @@ import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/login";
 
 export const LoginForm = () => {
-  const [error, setError] = useState<string | undefined>("");
-  const [success, setSuccess] = useState<string | undefined>("");
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<string | undefined>(undefined);
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -35,11 +35,11 @@ export const LoginForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    setError("");
-    setSuccess("");
+    setError(undefined);
+    setSuccess(undefined);
 
-    startTransition(() => {
-      login(values).then((data) => {
+    startTransition(async () => {
+      await login(values).then((data) => {
         setError(data.error);
         setSuccess(data.success);
       });
@@ -93,8 +93,8 @@ export const LoginForm = () => {
               )}
             />
           </div>
-          <FormError message={error} />
-          <FormSuccess message={success} />
+          {error && <FormError message={error} />}
+          {success && <FormSuccess message={success} />}
           <Button type="submit" disabled={isPending} className="w-full">
             Login
           </Button>
