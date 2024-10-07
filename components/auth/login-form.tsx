@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { LoginSchema } from "@/schemas";
@@ -22,6 +23,12 @@ import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/login";
 
 export const LoginForm = () => {
+  const searchParams = useSearchParams();
+  const urlError: string | undefined =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Invalid credentials!"
+      : "";
+
   const [error, setError] = useState<string | undefined>(undefined);
   const [success, setSuccess] = useState<string | undefined>(undefined);
   const [isPending, startTransition] = useTransition();
@@ -93,8 +100,8 @@ export const LoginForm = () => {
               )}
             />
           </div>
-          {error && <FormError message={error} />}
-          {success && <FormSuccess message={success} />}
+          <FormError message={error || urlError} />
+          <FormSuccess message={success ? success : ""} />
           <Button type="submit" disabled={isPending} className="w-full">
             Login
           </Button>
